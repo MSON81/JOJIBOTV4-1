@@ -609,9 +609,9 @@ async def task():
 								bossFlag0[i] = False
 								bossMungFlag[i] = False
 								bossMungCnt[i] = 0
-								await client.get_channel(channel).send('```자동 멍처리 횟수 ' + basicSetting[17] + '회 초과! [' + bossData[i][0] + '] 삭제!```', tts=False)
+								await client.get_channel(channel).send('```자동 미입력 횟수 ' + basicSetting[17] + '회 초과! [' + bossData[i][0] + '] 삭제!```', tts=False)
 								#await dbSave()
-								print ('자동멍처리 횟수초과 <' + bossData[i][0] + ' 삭제완료>')
+								print ('자동미입력 횟수초과 <' + bossData[i][0] + ' 삭제완료>')
 							else:
 								################ 미입력 보스 ################
 								if bossData[i][2] == '0':
@@ -949,7 +949,7 @@ async def on_ready():
 
 	# 디스코드에는 현재 본인이 어떤 게임을 플레이하는지 보여주는 기능이 있습니다.
 	# 이 기능을 사용하여 봇의 상태를 간단하게 출력해줄 수 있습니다.
-	await client.change_presence(status=discord.Status.dnd, activity=discord.Game(name=command[1][0], type=1), afk=False)
+	await client.change_presence(status=discord.Status.dnd, activity=discord.Game(name='V4', type=1), afk=False)
 
 while True:
 	################ 보탐봇 입장 ################ 	
@@ -1026,10 +1026,6 @@ while True:
 			command_list += ','.join(command[16]) + ' [할말]\n'     #!v
 			command_list += ','.join(command[17]) + '\n'     #!리젠
 			command_list += ','.join(command[18]) + '\n'     #!현재시간
-			command_list += ','.join(command[24]) + '\n'     #!킬초기화
-			command_list += ','.join(command[25]) + '\n'     #!킬횟수 확인
-			command_list += ','.join(command[25]) + ' [아이디]\n'     #!킬
-			command_list += ','.join(command[26]) + ' [아이디]\n'     #!킬삭제
 			command_list += ','.join(command[19]) + '\n'     #!공지
 			command_list += ','.join(command[19]) + ' [공지내용]\n'     #!공지
 			command_list += ','.join(command[20]) + '\n'     #!공지삭제
@@ -1809,7 +1805,7 @@ while True:
 							if ouput_bossData[i][5] == 0 :
 								boss_information[cnt] = boss_information[cnt] + ouput_bossData[i][3] + ' ' + ouput_bossData[i][2] + ' : ' + ouput_bossData[i][0] + ' ' + ouput_bossData[i][6] + '\n'
 							else :
-								boss_information[cnt] = boss_information[cnt] + ouput_bossData[i][3] + ' ' + ouput_bossData[i][2] + ' : ' + ouput_bossData[i][0] + ' (멍 ' + str(ouput_bossData[i][5]) + '회)' + ' ' + ouput_bossData[i][6] + '\n'
+								boss_information[cnt] = boss_information[cnt] + ouput_bossData[i][3] + ' ' + ouput_bossData[i][2] + ' : ' + ouput_bossData[i][0] + ' (미입력 ' + str(ouput_bossData[i][5]) + '회)' + ' ' + ouput_bossData[i][6] + '\n'
 
 			if len(boss_information) == 1 and len(tmp_boss_information) == 1:
 				###########################
@@ -1981,31 +1977,6 @@ while True:
 							else :
 								boss_information[cnt] = boss_information[cnt] + ouput_bossData[i][3] + ' ' + ouput_bossData[i][2] + ' : ' + ouput_bossData[i][0] + ' (멍 ' + str(ouput_bossData[i][5]) + '회)' + ' ' + ouput_bossData[i][6] + '\n'
 
-			###########################고정보스출력
-			if len(fixedboss_information[0]) != 0:
-				fixedboss_information[0] = "```diff\n" + fixedboss_information[0] + "\n```"
-			else :
-				fixedboss_information[0] = '``` ```'
-	
-			embed = discord.Embed(
-					title = "----- 고 정 보 스 -----",
-					description= fixedboss_information[0],
-					color=0x0000ff
-					)
-			await ctx.send( embed=embed, tts=False)
-			for i in range(len(fixedboss_information)-1):
-				if len(fixedboss_information[i+1]) != 0:
-					fixedboss_information[i+1] = "```diff\n" + fixedboss_information[i+1] + "\n```"
-				else :
-					fixedboss_information[i+1] = '``` ```'
-
-				embed = discord.Embed(
-						title = '',
-						description= fixedboss_information[i+1],
-						color=0x0000ff
-						)
-				await ctx.send( embed=embed, tts=False)
-
 			###########################일반보스출력
 			if len(boss_information[0]) != 0:
 				boss_information[0] = "```diff\n" + boss_information[0] + "\n```"
@@ -2067,90 +2038,10 @@ while True:
 		else:
 			return
 
-	################ 킬초기화 ################ 
-	@client.command(name=command[24][0], aliases=command[24][1:])
-	async def killInit_(ctx):
-		if ctx.message.channel.id == basicSetting[7] or ctx.message.channel.id == basicSetting[18]:
-			await initkill_list()
-			await ctx.send( '< 킬 목록 초기화완료 >', tts=False)
-		else:
-			return
+	
 
-	################ 킬명단 확인 ################ 
-	@client.command(name=command[25][0], aliases=command[25][1:]) 
-	async def killList_(ctx):
-		if ctx.message.channel.id == basicSetting[7] or ctx.message.channel.id == basicSetting[18]:
-			msg = ctx.message.content[len(ctx.invoked_with)+1:]
-			if len(msg) > 1:
-				sayMessage = msg
 
-				tmp_fk = []
-				listchk = 0
 
-				if sayMessage != ' ':
-					for i in range(len(kill_Data)):
-						if sayMessage == kill_Data[i][0]:
-							kill_Data[i][1] = int(kill_Data[i][1]) + 1
-							abc = kill_Data[i][1]
-							listchk = 1
-
-					if listchk == 0:
-						abc = 1
-						tmp_fk.append(sayMessage)
-						tmp_fk.append(1)
-						kill_Data.append(tmp_fk)
-						tmp_fk = []
-					embed = discord.Embed(
-							description= ':skull_crossbones:' + sayMessage + ' 따히! [' + str(abc) + '번]\n',
-							color=0xff00ff
-							)
-					await ctx.send(embed=embed, tts=False)
-				else:
-					await ctx.send( '```제대로 된 아이디를 입력해주세요!\n```', tts=False)
-			else:
-				kill_output = ''
-
-				for i in range(len(kill_Data)):
-					if kill_Data[i][0] != '':
-						kill_output += ':skull_crossbones: ' + str(kill_Data[i][0]) + ' : ' + str(kill_Data[i][1]) + '번 따히!\n'
-
-				if kill_output != '' :
-					embed = discord.Embed(
-							description= str(kill_output),
-							color=0xff00ff
-							)
-				else :
-					embed = discord.Embed(
-							description= '```등록된 킬 목록이 없습니다. 분발하세요!```',
-							color=0xff00ff
-							)
-				await ctx.send(embed=embed, tts=False)
-		else:
-			return
-
-	################ 킬삭제 ################ 
-	@client.command(name=command[26][0], aliases=command[26][1:])
-	async def killDel_(ctx):
-		if ctx.message.channel.id == basicSetting[7] or ctx.message.channel.id == basicSetting[18]:
-			msg = ctx.message.content[len(ctx.invoked_with)+1:]
-			sayMessage = msg
-
-			indexchk = 0
-
-			if sayMessage != ' ':
-				for i in range(len(kill_Data)):
-					if sayMessage == kill_Data[i][0]:
-						indexchk = i + 1
-						
-				if indexchk != 0:
-					del(kill_Data[indexchk-1])
-					await ctx.send( '```<' + sayMessage + '> 킬 목록 삭제완료!\n```', tts=False)
-				else :				
-					await ctx.send( '```킬 목록에 등록되어 있지 않습니다!\n```', tts=False)
-			else:
-				await ctx.send( '```제대로 된 아이디를 입력해주세요!\n```', tts=False)
-		else:
-			return
 
 	################ 경주 ################ 
 	@client.command(name=command[27][0], aliases=command[27][1:])
